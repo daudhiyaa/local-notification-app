@@ -13,7 +13,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    NotificationApi.init();
+    NotificationApi.init(initScheduled: true);
     listenNotifications();
   }
 
@@ -60,12 +60,26 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 20),
             ElevatedButton.icon(
-              onPressed: () => NotificationApi.showPeriodicNotification(
-                id: 3,
-                title: 'Hello Daud',
-                body: 'This is Scheduled Notification',
-                payload: 'Scheduled Notification Payload',
-              ),
+              onPressed: () {
+                NotificationApi.showScheduledNotification(
+                  id: 3,
+                  title: 'Hello Daud',
+                  body: 'This is Scheduled Notification',
+                  payload: 'Scheduled Notification Payload',
+                  scheduleDate: DateTime.now().add(const Duration(seconds: 5)),
+                );
+
+                const snackbar = SnackBar(
+                  content: Text(
+                    'Scheduled Notification will be shown after 5 seconds',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  backgroundColor: Colors.blueGrey,
+                );
+                ScaffoldMessenger.of(context)
+                  ..removeCurrentSnackBar()
+                  ..showSnackBar(snackbar);
+              },
               icon: const Icon(Icons.notifications_active_outlined),
               label: const Text('Scheduled Notification'),
             )
