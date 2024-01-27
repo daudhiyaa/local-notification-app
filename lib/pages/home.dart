@@ -39,7 +39,6 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () => NotificationApi.showNotification(
-                id: 1,
                 title: 'Hello Daud',
                 body: 'This is Local Notification',
                 payload: 'Local Notification Payload',
@@ -50,7 +49,6 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () => NotificationApi.showPeriodicNotification(
-                id: 2,
                 title: 'Hello Daud',
                 body: 'This is Periodic Notification',
                 payload: 'Periodic Notification Payload',
@@ -61,18 +59,19 @@ class _HomePageState extends State<HomePage> {
             const SizedBox(height: 20),
             ElevatedButton.icon(
               onPressed: () {
+                int duration = 7;
+
                 NotificationApi.showScheduledNotification(
-                  id: 3,
                   title: 'Hello Daud',
                   body: 'This is Scheduled Notification',
                   payload: 'Scheduled Notification Payload',
-                  scheduleDate: DateTime.now().add(const Duration(seconds: 5)),
+                  scheduleDate: DateTime.now().add(Duration(seconds: duration)),
                 );
 
-                const snackbar = SnackBar(
+                final snackbar = SnackBar(
                   content: Text(
-                    'Scheduled Notification will be shown after 5 seconds',
-                    style: TextStyle(fontSize: 18),
+                    'Scheduled Notification will be shown after $duration seconds',
+                    style: const TextStyle(fontSize: 15),
                   ),
                   backgroundColor: Colors.blueGrey,
                 );

@@ -1,8 +1,8 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
-import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 
 class NotificationApi {
   static final _notifications = FlutterLocalNotificationsPlugin();
@@ -13,6 +13,12 @@ class NotificationApi {
     const iOS = DarwinInitializationSettings();
     const settings = InitializationSettings(android: android, iOS: iOS);
 
+    // When App is Closed
+    final details = await _notifications.getNotificationAppLaunchDetails();
+    if (details != null && details.didNotificationLaunchApp) {
+      onNotifications.add(details.notificationResponse!.payload);
+    }
+
     await _notifications.initialize(
       settings,
       onDidReceiveNotificationResponse: (payload) async {
@@ -22,8 +28,6 @@ class NotificationApi {
 
     if (initScheduled) {
       tz.initializeTimeZones();
-      final locationName = await FlutterNativeTimezone.getLocalTimezone();
-      tz.setLocalLocation(tz.getLocation(locationName));
     }
   }
 
@@ -32,6 +36,23 @@ class NotificationApi {
     String channelName,
     String channelDesc,
   ) async {
+    String filePath = channelID.contains('1')
+        ? 'assets/icons/appstore.png'
+        : channelID.contains('2')
+            ? 'assets/icons/ISRDVB.png'
+            : 'assets/icons/ISRFM.png';
+    ByteData data = await rootBundle.load(filePath);
+    Uint8List bytes = data.buffer.asUint8List();
+
+    final ByteArrayAndroidBitmap notificationIcon =
+        ByteArrayAndroidBitmap(bytes);
+
+    final styleInformation = BigPictureStyleInformation(
+      notificationIcon,
+      largeIcon: notificationIcon,
+      contentTitle: 'Image Local Notification',
+    );
+
     return NotificationDetails(
       android: AndroidNotificationDetails(
         channelID,
@@ -39,6 +60,7 @@ class NotificationApi {
         channelDescription: channelDesc,
         importance: Importance.max,
         ticker: 'ticker',
+        styleInformation: styleInformation,
       ),
     );
   }
@@ -91,12 +113,12 @@ class NotificationApi {
         id,
         title,
         body,
-        _scheduleDaily(DateTime(scheduleDate.hour)),
-        // tz.TZDateTime.from(scheduleDate, tz.local),
+        // _scheduleDaily(DateTime(scheduleDate.hour)),
+        tz.TZDateTime.from(scheduleDate, tz.local),
         await _notificationDetails(
-          'Periodic Notification ID 2',
-          'Periodic Notification Channel Name',
-          'Periodic Notification Channel Description',
+          'Scheduled Notification ID 3',
+          'Scheduled Notification Channel Name',
+          'Scheduled Notification Channel Description',
         ),
         payload: payload,
         // androidAllowWhileIdle: true,
@@ -104,21 +126,4 @@ class NotificationApi {
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
       );
-
-  static tz.TZDateTime _scheduleDaily(DateTime time) {
-    final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      time.hour,
-      time.minute,
-      time.second,
-    );
-
-    return scheduledDate.isBefore(now)
-        ? scheduledDate.add(const Duration(days: 1))
-        : scheduledDate;
-  }
 }
