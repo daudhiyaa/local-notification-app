@@ -40,15 +40,14 @@ class NotificationApi {
     String? body,
     String? payload,
   }) async =>
-      _notifications.periodicallyShow(
+      _notifications.show(
         id,
         title,
         body,
-        RepeatInterval.everyMinute,
         await _notificationDetails(
-          'ID 1',
-          'My Channel Name',
-          'My Channel Description',
+          'Local Notification ID 1',
+          'Local Notification Channel Name',
+          'Local Notification Channel Description',
         ),
         payload: payload,
       );
@@ -59,14 +58,15 @@ class NotificationApi {
     String? body,
     String? payload,
   }) async =>
-      _notifications.show(
+      _notifications.periodicallyShow(
         id,
         title,
         body,
+        RepeatInterval.everyMinute,
         await _notificationDetails(
-          'ID 2',
-          'My Channel Name',
-          'My Channel Description',
+          'Periodic Notification ID 2',
+          'Periodic Notification Channel Name',
+          'Periodic Notification Channel Description',
         ),
         payload: payload,
       );

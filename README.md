@@ -1,6 +1,6 @@
-# local_notification_app
+# Local Notification App
 
-A new Flutter project.
+A basic implementation of local notification plugin in Flutter App.
 
 ## Getting Started
 
